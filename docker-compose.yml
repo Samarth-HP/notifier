@@ -16,6 +16,33 @@ services:
     volumes:
       - ${RABBITMQ_DATA_DIR}:/bitnami
 
+  db:
+    image: postgres:12
+    ports:
+      - "${DB_PORT}:5432"
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ${DB_DATA_DIR}:/var/lib/postgresql/data/pgdata
+
+  graphql-engine:
+    image: ${HASURA_VERSION}
+    ports:
+      - "5002:8080"
+    depends_on:
+      - db
+    restart: always
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://${DB_USERNAME}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_ADMIN_PASS}
+
 networks:
   broker:
     driver: bridge
