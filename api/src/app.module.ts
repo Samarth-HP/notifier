@@ -1,10 +1,11 @@
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GupshupService } from './gupshup/gupshup.service';
 import { Module } from '@nestjs/common';
 import { OtpService } from './otp/otp.service';
 import { SmsService } from './interfaces/sms.service';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 const gupshupFactory = {
   provide: 'OtpService',
@@ -27,7 +28,26 @@ const otpServiceFactory = {
 };
 
 @Module({
-  imports: [ConfigModule.forRoot()],
+  imports: [
+    ConfigModule.forRoot(),
+    ClientsModule.registerAsync([
+      {
+        name: 'CDAC_SERVICE',
+        imports: [ConfigModule],
+        useFactory: async (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [configService.get<string>('BROKER_URL')],
+            queue: configService.get<string>('CDAC_SEND_QUEUE'),
+            queueOptions: {
+              durable: true,
+            },
+          },
+        }),
+        inject: [ConfigService],
+      },
+    ]),
+  ],
   controllers: [AppController],
   providers: [otpServiceFactory, SmsService],
 })
