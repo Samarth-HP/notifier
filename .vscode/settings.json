@@ -1,5 +1,7 @@
 {
-    "cSpell.words": [
-        "nestjs"
-    ]
+  "cSpell.words": ["nestjs"],
+  "editor.formatOnSave": true,
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  }
 }
