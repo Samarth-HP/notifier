@@ -43,6 +43,22 @@ services:
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_ADMIN_PASS}
 
+  cdac-service:
+    image: samagragovernance/cdac-service:latest
+    restart: always
+    environment:
+      USERNAME: "${CDAC_USERNAME}"
+      SENDER_ID: "${CDAC_SENDER_ID}"
+      PASSWORD: "${CDAC_PASSWORD}"
+      SECURE_KEY: "${CDAC_SECURE_KEY}"
+    ports:
+      - "5003:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://cdac:8080/api"]
+      interval: 2s
+      timeout: 5s
+      retries: 20
+
 networks:
   broker:
     driver: bridge
