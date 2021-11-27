@@ -1,0 +1,22 @@
+{
+  "name": "benchmarks",
+  "version": "1.0.0",
+  "description": "Benchmarking notifier",
+  "main": ".eslintrc.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "benchmark": "k6 run --duration 30s --vus 5 scripts.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Samarth-HP/notifier.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Samarth-HP/notifier/issues"
+  },
+  "homepage": "https://github.com/Samarth-HP/notifier#readme"
+}
