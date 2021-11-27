@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sms-api
+  labels:
+    app: sms-api
+spec:
+  selector:
+    matchLabels:
+      app: sms-api
+  template:
+    metadata:
+      labels:
+        app: sms-api
+    spec:
+      containers:
+        - name: api
+          image: sms-api
+          ports:
+            - containerPort: 3000
