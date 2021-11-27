@@ -5,13 +5,16 @@ import {
   Payload,
   RmqContext,
 } from '@nestjs/microservices';
+import { SendDto } from './send.dto';
 
 @Controller()
 export class AppController {
   @MessagePattern({ cmd: 'send' })
-  async send(data: any): Promise<string> {
+  async send(data: SendDto): Promise<string> {
     console.log(
-      `Trying to send message with the followin data = ${JSON.stringify(data)}`,
+      `Trying to send message with the following data = ${JSON.stringify(
+        data,
+      )}`,
     );
     return 'sent';
   }

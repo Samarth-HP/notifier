@@ -7,22 +7,6 @@ import { Transport } from '@nestjs/microservices';
 @Module({
   imports: [ConfigModule.forRoot()],
   controllers: [AppController],
-  providers: [
-    AppService,
-    {
-      provide: 'CDAC_SERVICE',
-      useFactory: async (configService: ConfigService) => ({
-        transport: Transport.RMQ,
-        options: {
-          urls: [configService.get<string>('BROKER_URL')],
-          queue: configService.get<string>('CDAC_SEND_QUEUE'),
-          queueOptions: {
-            durable: true,
-          },
-        },
-      }),
-      inject: [ConfigService],
-    },
-  ],
+  providers: [AppService],
 })
 export class AppModule {}
