@@ -59,8 +59,8 @@ const path = require('path')
 const { findSync } = require('./runtime')
 
 const dirname = findSync(process.cwd(), [
-    "prisma/generated/client",
-    "generated/client",
+    "../api/prisma/generated/client",
+    "api/prisma/generated/client",
 ], ['d'], ['d'], 1)[0] || __dirname
 /**
  * Enums
@@ -180,12 +180,17 @@ const config = {
     "config": {
       "engineType": "library"
     },
-    "binaryTargets": [],
+    "binaryTargets": [
+      {
+        "fromEnvVar": null,
+        "value": "linux-arm64-openssl-1.1.x"
+      }
+    ],
     "previewFeatures": [],
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
+    "rootEnvPath": "../../../.env",
     "schemaEnvPath": "../../../../db/.env"
   },
   "relativePath": "../../../../db",
@@ -212,7 +217,7 @@ const PrismaClient = getPrismaClient(config)
 exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 
-path.join(__dirname, 'libquery_engine-darwin-arm64.dylib.node');
-path.join(process.cwd(), './prisma/generated/client/libquery_engine-darwin-arm64.dylib.node')
+path.join(__dirname, 'libquery_engine-linux-arm64-openssl-1.1.x.so.node');
+path.join(process.cwd(), './../api/prisma/generated/client/libquery_engine-linux-arm64-openssl-1.1.x.so.node')
 path.join(__dirname, 'schema.prisma');
-path.join(process.cwd(), './prisma/generated/client/schema.prisma')
+path.join(process.cwd(), './../api/prisma/generated/client/schema.prisma')

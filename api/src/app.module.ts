@@ -6,6 +6,7 @@ import { Module } from '@nestjs/common';
 import { OtpService } from './otp/otp.service';
 import { SmsService } from './interfaces/sms.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { PrismaService } from './prisma.service';
 
 const gupshupFactory = {
   provide: 'OtpService',
@@ -49,6 +50,6 @@ const otpServiceFactory = {
     ]),
   ],
   controllers: [AppController],
-  providers: [otpServiceFactory, SmsService],
+  providers: [otpServiceFactory, SmsService, AppService, PrismaService],
 })
 export class AppModule {}

@@ -7,7 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "benchmark": "k6 run --duration 30s --vus 5 scripts.js"
+    "benchmark": "k6 run --duration 10s --vus 5 scripts.js"
   },
   "repository": {
     "type": "git",

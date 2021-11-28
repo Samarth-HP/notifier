@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { ProviderName, Status } from 'prisma/generated/client';
+import { ProviderName, Sms, Status } from 'prisma/generated/client';
 import { AppService } from './app.service';
 import { SMSResponse } from './interfaces/sms.interface';
 import { SmsService } from './interfaces/sms.service';
@@ -13,6 +13,7 @@ export class AppController {
   constructor(
     private readonly otpService: OtpService,
     private readonly smsService: SmsService,
+    private readonly appService: AppService,
     @Inject('CDAC_SERVICE') private cdacSendClient: ClientProxy,
   ) {}
 
@@ -46,5 +47,14 @@ export class AppController {
       console.error(message);
     }
     return { status, message };
+  }
+
+  @Get('/allSms')
+  async getAllSmses(): Promise<any> {
+    const all: Sms[] = await this.appService.getAllSmses();
+
+    return JSON.stringify(all, (key, value) =>
+      typeof value === 'bigint' ? Number(value) : value,
+    );
   }
 }
