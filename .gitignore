@@ -7,3 +7,6 @@ pdata
 
 # tilt
 tilt_modules
+
+# Configs
+etc/otel-config.yaml
