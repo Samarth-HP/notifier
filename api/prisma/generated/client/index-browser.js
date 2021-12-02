@@ -11,12 +11,12 @@ const Prisma = {}
 exports.Prisma = Prisma
 
 /**
- * Prisma Client JS version: 3.5.0
- * Query Engine version: 78a5df6def6943431f4c022e1428dbc3e833cf8e
+ * Prisma Client JS version: 2.30.3
+ * Query Engine version: b8c35d44de987a9691890b3ddf3e2e7effb9bf20
  */
 Prisma.prismaVersion = {
-  client: "3.5.0",
-  engine: "78a5df6def6943431f4c022e1428dbc3e833cf8e"
+  client: "2.30.3",
+  engine: "b8c35d44de987a9691890b3ddf3e2e7effb9bf20"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -44,6 +44,7 @@ Prisma.Decimal = Decimal
 /**
  * Re-export of sql-template-tag
  */
+
 Prisma.sql = () => {
   throw new Error(`sqltag is unable to be run in the browser.
 In case this error is unexpected for you, please report it in https://github.com/prisma/prisma/issues`,
@@ -61,13 +62,6 @@ Prisma.raw = () => {
 In case this error is unexpected for you, please report it in https://github.com/prisma/prisma/issues`,
 )}
 Prisma.validator = () => (val) => val
-
-/**
- * Shorthand utilities for JSON filtering
- */
-Prisma.DbNull = 'DbNull'
-Prisma.JsonNull = 'JsonNull'
-Prisma.AnyNull = 'AnyNull'
 
 /**
  * Enums
@@ -115,24 +109,9 @@ exports.Prisma.SortOrder = makeEnum({
   desc: 'desc'
 });
 
-exports.Prisma.JsonNullValueInput = makeEnum({
-  JsonNull: 'JsonNull'
-});
-
-exports.Prisma.NullableJsonNullValueInput = makeEnum({
-  DbNull: 'DbNull',
-  JsonNull: 'JsonNull'
-});
-
 exports.Prisma.QueryMode = makeEnum({
   default: 'default',
   insensitive: 'insensitive'
-});
-
-exports.Prisma.JsonNullValueFilter = makeEnum({
-  DbNull: 'DbNull',
-  JsonNull: 'JsonNull',
-  AnyNull: 'AnyNull'
 });
 exports.ProviderName = makeEnum({
   CDAC: 'CDAC',

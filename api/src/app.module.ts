@@ -1,13 +1,14 @@
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GupshupService } from './gupshup/gupshup.service';
 import { Module } from '@nestjs/common';
-import { OtpService } from './otp/otp.service';
-import { SmsService } from './interfaces/sms.service';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { PrismaService } from './prisma.service';
 import { OpenTelemetryModule } from 'nestjs-otel';
+import { OtpService } from './otp/otp.service';
+import { PrismaService } from './prisma.service';
+import { SmsService } from './interfaces/sms.service';
 
 const gupshupFactory = {
   provide: 'OtpService',
@@ -48,7 +49,7 @@ const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 
 @Module({
   imports: [
-    OpenTelemetryModule,
+    OpenTelemetryModuleConfig,
     ConfigModule.forRoot(),
     ClientsModule.registerAsync([
       {
