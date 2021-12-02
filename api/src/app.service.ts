@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Span } from 'nestjs-otel';
 import {
   Sms,
   Prisma,
@@ -12,6 +13,7 @@ import { PrismaService } from './prisma.service';
 export class AppService {
   constructor(private prisma: PrismaService) {}
 
+  @Span('CRITICAL_SECTION')
   async getAllSmses(): Promise<Sms[]> {
     await this.createSms({
       phone: '9415787824',

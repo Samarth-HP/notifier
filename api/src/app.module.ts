@@ -7,6 +7,7 @@ import { OtpService } from './otp/otp.service';
 import { SmsService } from './interfaces/sms.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { PrismaService } from './prisma.service';
+import { OpenTelemetryModule } from 'nestjs-otel';
 
 const gupshupFactory = {
   provide: 'OtpService',
@@ -28,8 +29,26 @@ const otpServiceFactory = {
   inject: [],
 };
 
+const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
+  metrics: {
+    hostMetrics: true, // Includes Host Metrics
+    defaultMetrics: true, // Includes Default Metrics
+    apiMetrics: {
+      enable: true, // Includes api metrics
+      timeBuckets: [], // You can change the default time buckets
+      defaultLabels: {
+        // You can set default labels for api metrics
+        custom: 'label',
+      },
+      ignoreRoutes: ['/favicon.ico'], // You can ignore specific routes (See https://docs.nestjs.com/middleware#excluding-routes for options)
+      ignoreUndefinedRoutes: false, //Records metrics for all URLs, even undefined ones
+    },
+  },
+});
+
 @Module({
   imports: [
+    OpenTelemetryModule,
     ConfigModule.forRoot(),
     ClientsModule.registerAsync([
       {
