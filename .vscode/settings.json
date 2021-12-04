@@ -3,5 +3,13 @@
   "editor.formatOnSave": true,
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"
-  }
+  },
+    "files.exclude": {
+        "**/bin": true,
+        "**/obj": true,
+        "pdata": true,
+        "broker": true,
+        "tilt_modules": true,
+        "**/node_modules/": true
+    },
 }
