@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { ProviderName, Sms, Status } from 'prisma/generated/client';
+import { ProviderName, Sms, Status } from '../../db/client';
 import { AppService } from './app.service';
 import { SMSResponse } from './interfaces/sms.interface';
 import { SmsService } from './interfaces/sms.service';
