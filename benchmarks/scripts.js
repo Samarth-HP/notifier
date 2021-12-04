@@ -3,7 +3,7 @@ import http from "k6/http";
 const baseURL = "http://localhost:3000";
 
 export default function () {
-  let response = http.post(`${baseURL}/send`, {
+  let response = http.get(`${baseURL}/allSms`, {
     user: "string",
     templateId: 12,
     provider: "CDAC",

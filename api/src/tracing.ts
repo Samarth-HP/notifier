@@ -18,10 +18,10 @@ import { NodeSDK } from '@opentelemetry/sdk-node';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 
 const traceCollectorOptions = {
-  url: 'grpc://localhost:4317',
+  url: 'grpc://host.docker.internal:4317',
 };
 const metricCollectorOptions = {
-  url: 'grpc://localhost:4317',
+  url: 'grpc://host.docker.internal:4317',
 };
 
 const spanExporter = new CollectorTraceExporter(traceCollectorOptions);

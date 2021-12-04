@@ -1,4 +1,4 @@
-FROM node:12
+FROM node:14
 LABEL maintainer = "Chakshu Gautam"
 LABEL maintainer_email = "chakshu@samagragovernance.in"
 
@@ -18,5 +18,5 @@ RUN yarn install
 
 ADD . .
 
-EXPOSE 3000
+EXPOSE 3001
 CMD [ "npm", "run", "start" ]

@@ -23,4 +23,4 @@ docker_build('sms-api', './api',
     ],
 )
 k8s_yaml('./api/deployment.yml')
-k8s_resource('sms-api', port_forwards=3000, resource_deps=['deploy'])
+k8s_resource('sms-api', port_forwards=3001, resource_deps=['deploy'])
