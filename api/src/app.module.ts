@@ -9,6 +9,7 @@ import { OpenTelemetryModule } from 'nestjs-otel';
 import { OtpService } from './otp/otp.service';
 import { PrismaService } from './prisma.service';
 import { SmsService } from './interfaces/sms.service';
+import { TemplateService } from './template/template.service';
 
 const gupshupFactory = {
   provide: 'OtpService',
@@ -63,6 +64,6 @@ const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
     ]),
   ],
   controllers: [AppController],
-  providers: [otpServiceFactory, SmsService, AppService, PrismaService],
+  providers: [otpServiceFactory, SmsService, AppService, PrismaService, TemplateService],
 })
 export class AppModule {}

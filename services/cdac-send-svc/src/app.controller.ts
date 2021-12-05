@@ -5,18 +5,19 @@ import {
   Payload,
   RmqContext,
 } from '@nestjs/microservices';
+import { AppService } from './app.service';
+import { CdacResponse } from './constants';
 import { SendDto } from './send.dto';
 
 @Controller()
 export class AppController {
+  constructor(private readonly service: AppService) {}
+
   @MessagePattern({ cmd: 'send' })
-  async send(data: SendDto): Promise<string> {
-    console.log(
-      `Trying to send message with the following data = ${JSON.stringify(
-        data,
-      )}`,
-    );
-    return 'sent';
+  async send(data: { sendDto: SendDto; message: string; meta: any }) {
+    const res: CdacResponse = await this.service.sendSingleSMS(data);
+    // Persist data to SMS table
+    // Send this to track
   }
 
   @MessagePattern('send')

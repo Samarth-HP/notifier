@@ -1,4 +1,9 @@
-import { Prisma, ProviderName, Sms, TextType } from '../../db/client';
+import {
+  Prisma,
+  ProviderName,
+  Sms,
+  TextType,
+} from '../prisma/generated/client';
 
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';

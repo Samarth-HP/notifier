@@ -13,6 +13,11 @@ export enum OnNext {
   DROP_AND_NOTIFY,
 }
 
+export interface CdacResponse {
+  responseCode: number;
+  messageID: string;
+}
+
 // prettier-ignore
 export const smsResponses = {
   401: {"onNext":[OnNext.NEXT], "details": 'Credentials Error, may be invalid username or password', type: ResponseType.SUCCESS},

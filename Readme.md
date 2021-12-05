@@ -1,8 +1,22 @@
-`yarn start:dev` on all the sub folders (`api`, `cdac-send-svc`, `cdac-track-svc`).
+Steps to start development server
 
-`docker-compose up -d db graphql-engine`
+- Run `docker-compose up -d` to start the Database and related services.
+- To migrate the database and generate client library run - `npx prisma migrate dev`
+- Add Symlinks to clients libraryies
 
-`npx prisma migrate dev`
+  ```shell
+    mkdir -p  ./services/cdac-send-svc/prisma/generated/client
+    mkdir -p  ./services/cdac-track-svc/prisma/generated/client
+    mkdir -p  ./api/prisma/generated/client
 
-Setting up OTEL-Collector on Grafana Cloud
-https://grafana.com/blog/2021/04/13/how-to-send-traces-to-grafana-clouds-tempo-service-with-opentelemetry-collector/
+    cd ./services/cdac-send-svc/prisma/generated/client
+    ln -s ../../../../../db/client/* .
+
+    cd ../../../../../services/cdac-track-svc/prisma/generated/client
+    ln -s ../../../../../db/client/* .
+
+    cd ../../../../../api/prisma/generated/client
+    ln -s ../../../../db/client/* .
+  ```
+
+- `yarn start:dev` on all the sub folders (`api`, `services/cdac-send-svc`, `services/cdac-track-svc`).

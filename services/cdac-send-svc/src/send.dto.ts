@@ -5,4 +5,5 @@ export class SendDto {
   templateId: number;
   provider: ProviderName;
   data: any;
+  phone: string;
 }

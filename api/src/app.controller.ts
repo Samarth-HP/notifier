@@ -1,12 +1,18 @@
 import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { ProviderName, Sms, Status } from '../../db/client';
+import { ClientProxy, PatternMetadata } from '@nestjs/microservices';
+import { ProviderName, Sms, Status } from '../prisma/generated/client';
 import { AppService } from './app.service';
 import { SMSResponse } from './interfaces/sms.interface';
 import { SmsService } from './interfaces/sms.service';
 import { OtpService } from './otp/otp.service';
 import { SendDto } from './send.dto';
 import { MessagePattern } from '@nestjs/microservices';
+import { TemplateService } from './template/template.service';
+import {
+  ErrorRenderResponse,
+  isErrorRenderResponse,
+  RenderResponse,
+} from './template/templateProcess.dto';
 
 @Controller()
 export class AppController {
@@ -14,6 +20,7 @@ export class AppController {
     private readonly otpService: OtpService,
     private readonly smsService: SmsService,
     private readonly appService: AppService,
+    private readonly templateService: TemplateService,
     @Inject('CDAC_SERVICE') private cdacSendClient: ClientProxy,
   ) {}
 
@@ -34,11 +41,24 @@ export class AppController {
     let status: Status;
     let message: string;
     if (sendDto.provider === ProviderName.CDAC) {
-      const pattern = { cmd: 'send' };
-      const payload = sendDto;
-      this.cdacSendClient
-        .send<SendDto>(pattern, payload)
-        .subscribe((x) => console.log(x));
+      const renderResponse: RenderResponse | ErrorRenderResponse =
+        await this.templateService.process({
+          id: sendDto.templateId,
+          data: sendDto.data,
+        });
+      const pattern: PatternMetadata = { cmd: 'send' };
+      if (!isErrorRenderResponse(renderResponse)) {
+        this.cdacSendClient
+          .send<SendDto>(pattern, {
+            message: renderResponse.processed,
+            sendDto,
+            meta: renderResponse.meta,
+          })
+          .subscribe((x) => console.log(x));
+      } else {
+        status = Status.FAILED;
+        message = 'Template does not exist';
+      }
     } else if (sendDto.provider === ProviderName.GUPSHUP) {
       console.log('Send this to Gupshup Service');
     } else {

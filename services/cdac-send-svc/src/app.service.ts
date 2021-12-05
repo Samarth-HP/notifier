@@ -1,12 +1,18 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { CdacResponse } from './constants';
+import { SendDto } from './send.dto';
+import got, { Options } from 'got';
 
 @Injectable()
 export class AppService {
+  constructor(private configService: ConfigService) {}
+
   getHello(): string {
     return 'Hello World!';
   }
 
-  parseSMSResponse = (response) => {
+  parseSMSResponse = (response: string): CdacResponse => {
     // console.log(response);
     let s;
     // Case for error => 'ERROR : 406 Invalid mobile number\r\n'
@@ -34,20 +40,30 @@ export class AppService {
     }
   };
 
-  sendSingleSMS = async (params) => {
-    const url = `https://localhost`;
-    return fetch(url + query, {
-      method: 'POST',
-      timeout: 15000,
-    })
-      .then((r) => {
-        // console.log('Request finished for: ');
-        let text = r.text();
-        return text;
-      })
-      .catch((e) => {
-        console.log(e);
-        return '498, ';
-      });
+  sendSingleSMS = async (d: {
+    sendDto: SendDto;
+    message: string;
+    meta: any;
+  }): Promise<CdacResponse> => {
+    const url = `${this.configService.get(
+      'CDAC_SERVICE_URL',
+    )}/api/send_unicode_sms`;
+
+    const res = await got.get(url, {
+      searchParams: {
+        message: d.message,
+        mobileNumber: d.sendDto.phone,
+        templateid: d.meta.cdacId,
+      },
+    });
+
+    if (res.statusCode >= 200 && res.statusCode <= 299) {
+      return this.parseSMSResponse(res.body as string);
+    } else {
+      return {
+        messageID: '',
+        responseCode: 498,
+      };
+    }
   };
 }

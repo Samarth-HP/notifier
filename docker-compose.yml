@@ -1,20 +1,20 @@
 version: "3"
 services:
-  broker:
-    container_name: broker
-    networks:
-      - broker
-    image: "docker.io/bitnami/rabbitmq:latest"
-    environment:
-      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
-      - RABBITMQ_USERNAME=${RABBITMQ_USERNAME}
-    ports:
-      - "4369:4369"
-      - "5672:5672"
-      - "25672:25672"
-      - "15672:15672"
-    volumes:
-      - ${RABBITMQ_DATA_DIR}:/bitnami
+  # broker:
+  #   container_name: broker
+  #   networks:
+  #     - broker
+  #   image: "docker.io/bitnami/rabbitmq:latest"
+  #   environment:
+  #     - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+  #     - RABBITMQ_USERNAME=${RABBITMQ_USERNAME}
+  #   ports:
+  #     - "4369:4369"
+  #     - "5672:5672"
+  #     - "25672:25672"
+  #     - "15672:15672"
+  #   volumes:
+  #     - ${RABBITMQ_DATA_DIR}:/bitnami
 
   db:
     image: postgres:12
@@ -58,6 +58,15 @@ services:
       interval: 2s
       timeout: 5s
       retries: 20
+
+  brokerOfficial:
+    image: rabbitmq:management
+    environment:
+      RABBITMQ_DEFAULT_USER: "${RABBITMQ_USERNAME}"
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASSWORD}"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
 networks:
   broker:

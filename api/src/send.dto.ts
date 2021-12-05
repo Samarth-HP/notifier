@@ -1,9 +1,10 @@
 import { PrismaService } from './prisma.service';
-import { ProviderName } from '../../db/client';
+import { ProviderName } from '../prisma/generated/client';
 
 export class SendDto {
   user: string;
   templateId: number;
   provider: ProviderName;
   data: any;
+  phone: any;
 }
