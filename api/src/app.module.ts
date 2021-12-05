@@ -8,8 +8,8 @@ import { Module } from '@nestjs/common';
 import { OpenTelemetryModule } from 'nestjs-otel';
 import { OtpService } from './otp/otp.service';
 import { PrismaService } from './prisma.service';
-import { SmsService } from './interfaces/sms.service';
 import { TemplateService } from './template/template.service';
+import { SmsService } from './sms/sms.service';
 
 const gupshupFactory = {
   provide: 'OtpService',
@@ -47,7 +47,7 @@ const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
     ConfigModule.forRoot(),
     ClientsModule.registerAsync([
       {
-        name: 'CDAC_SERVICE',
+        name: 'CDAC_SEND_SERVICE',
         imports: [ConfigModule],
         useFactory: async (configService: ConfigService) => ({
           transport: Transport.RMQ,
@@ -64,6 +64,12 @@ const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
     ]),
   ],
   controllers: [AppController],
-  providers: [otpServiceFactory, SmsService, AppService, PrismaService, TemplateService],
+  providers: [
+    otpServiceFactory,
+    SmsService,
+    AppService,
+    PrismaService,
+    TemplateService,
+  ],
 })
 export class AppModule {}

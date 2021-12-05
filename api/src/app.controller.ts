@@ -1,9 +1,14 @@
 import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
 import { ClientProxy, PatternMetadata } from '@nestjs/microservices';
-import { ProviderName, Sms, Status } from '../prisma/generated/client';
+import {
+  ProviderName,
+  Sms,
+  Status,
+  TextType,
+} from '../prisma/generated/client';
 import { AppService } from './app.service';
 import { SMSResponse } from './interfaces/sms.interface';
-import { SmsService } from './interfaces/sms.service';
+import { SmsService } from './sms/sms.service';
 import { OtpService } from './otp/otp.service';
 import { SendDto } from './send.dto';
 import { MessagePattern } from '@nestjs/microservices';
@@ -21,7 +26,7 @@ export class AppController {
     private readonly smsService: SmsService,
     private readonly appService: AppService,
     private readonly templateService: TemplateService,
-    @Inject('CDAC_SERVICE') private cdacSendClient: ClientProxy,
+    @Inject('CDAC_SEND_SERVICE') private cdacSendClient: ClientProxy,
   ) {}
 
   @Get('/sendOTP')
@@ -41,6 +46,7 @@ export class AppController {
     let status: Status;
     let message: string;
     if (sendDto.provider === ProviderName.CDAC) {
+      // Get SMS text
       const renderResponse: RenderResponse | ErrorRenderResponse =
         await this.templateService.process({
           id: sendDto.templateId,
@@ -48,10 +54,23 @@ export class AppController {
         });
       const pattern: PatternMetadata = { cmd: 'send' };
       if (!isErrorRenderResponse(renderResponse)) {
+        // Persist SMS
+        const sms: Sms = await this.smsService.createSms({
+          phone: sendDto.phone,
+          user: sendDto.user,
+          org: sendDto.user,
+          text: renderResponse.processed,
+          type: TextType.ENGLISH,
+          provider: { connect: { id: 1 } },
+          meta: renderResponse.meta,
+        });
+
+        // Send SMS
         this.cdacSendClient
           .send<SendDto>(pattern, {
             message: renderResponse.processed,
             sendDto,
+            sms,
             meta: renderResponse.meta,
           })
           .subscribe((x) => console.log(x));
