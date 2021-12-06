@@ -1,1 +1,1 @@
-../../../../../db/client/index.d.ts
+../../../../../db/prisma/generated/client/index.d.ts

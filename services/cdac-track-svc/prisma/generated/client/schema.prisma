@@ -1,1 +1,1 @@
-../../../../../db/client/schema.prisma
+../../../../../db/prisma/generated/client/schema.prisma

@@ -1,1 +1,1 @@
-../../../../../db/client/index-browser.js
+../../../../../db/prisma/generated/client/index-browser.js
