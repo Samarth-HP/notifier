@@ -20,3 +20,7 @@ Steps to start development server
   ```
 
 - `yarn start:dev` on all the sub folders (`api`, `services/cdac-send-svc`, `services/cdac-track-svc`).
+
+Usability
+
+- This project is under heavy development and APIs can change without notice. Documentation can also be out of date.
