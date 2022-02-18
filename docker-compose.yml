@@ -30,7 +30,7 @@ services:
     volumes:
       - ${DB_DATA_DIR}:/var/lib/postgresql/data/pgdata
 
-  graphql-engine:
+  gql:
     image: ${HASURA_VERSION}
     ports:
       - "5002:8080"

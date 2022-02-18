@@ -47,6 +47,26 @@ export type Sms = {
 }
 
 /**
+ * Model FCM
+ * 
+ */
+export type FCM = {
+  createdAt: Date
+  updatedAt: Date
+  id: bigint
+  deviceId: string
+  user: string
+  org: string
+  text: string
+  type: TextType
+  status: Status
+  retries: number
+  providerMessageId: string | null
+  meta: Prisma.JsonValue | null
+  providerId: number | null
+}
+
+/**
  * Model Audit
  * 
  */
@@ -56,6 +76,7 @@ export type Audit = {
   id: bigint
   smsId: bigint
   event: Event
+  fCMId: bigint | null
 }
 
 
@@ -266,6 +287,16 @@ export class PrismaClient<
   get sms(): Prisma.SmsDelegate<GlobalReject>;
 
   /**
+   * `prisma.fCM`: Exposes CRUD operations for the **FCM** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more FCMS
+    * const fCMS = await prisma.fCM.findMany()
+    * ```
+    */
+  get fCM(): Prisma.FCMDelegate<GlobalReject>;
+
+  /**
    * `prisma.audit`: Exposes CRUD operations for the **Audit** model.
     * Example usage:
     * ```ts
@@ -304,7 +335,7 @@ export namespace Prisma {
 
   /**
    * Prisma Client JS version: 3.5.0
-   * Query Engine version: 78a5df6def6943431f4c022e1428dbc3e833cf8e
+   * Query Engine version: 34df67547cf5598f5a6cd3eb45f14ee70c3fb86f
    */
   export type PrismaVersion = {
     client: string
@@ -668,6 +699,7 @@ export namespace Prisma {
   export const ModelName: {
     Provider: 'Provider',
     Sms: 'Sms',
+    FCM: 'FCM',
     Audit: 'Audit'
   };
 
@@ -830,10 +862,12 @@ export namespace Prisma {
 
   export type ProviderCountOutputType = {
     Sms: number
+    FCM: number
   }
 
   export type ProviderCountOutputTypeSelect = {
     Sms?: boolean
+    FCM?: boolean
   }
 
   export type ProviderCountOutputTypeGetPayload<
@@ -919,6 +953,56 @@ export namespace Prisma {
      * 
     **/
     select?: SmsCountOutputTypeSelect | null
+  }
+
+
+
+  /**
+   * Count Type FCMCountOutputType
+   */
+
+
+  export type FCMCountOutputType = {
+    Audit: number
+  }
+
+  export type FCMCountOutputTypeSelect = {
+    Audit?: boolean
+  }
+
+  export type FCMCountOutputTypeGetPayload<
+    S extends boolean | null | undefined | FCMCountOutputTypeArgs,
+    U = keyof S
+      > = S extends true
+        ? FCMCountOutputType
+    : S extends undefined
+    ? never
+    : S extends FCMCountOutputTypeArgs
+    ?'include' extends U
+    ? FCMCountOutputType 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]: P extends keyof FCMCountOutputType ?FCMCountOutputType [P]
+  : 
+     never
+  } 
+    : FCMCountOutputType
+  : FCMCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * FCMCountOutputType without action
+   */
+  export type FCMCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the FCMCountOutputType
+     * 
+    **/
+    select?: FCMCountOutputTypeSelect | null
   }
 
 
@@ -1149,11 +1233,13 @@ export namespace Prisma {
     config?: boolean
     unitCost?: boolean
     Sms?: boolean | SmsFindManyArgs
+    FCM?: boolean | FCMFindManyArgs
     _count?: boolean | ProviderCountOutputTypeArgs
   }
 
   export type ProviderInclude = {
     Sms?: boolean | SmsFindManyArgs
+    FCM?: boolean | FCMFindManyArgs
     _count?: boolean | ProviderCountOutputTypeArgs
   }
 
@@ -1170,6 +1256,8 @@ export namespace Prisma {
     [P in TrueKeys<S['include']>]: 
           P extends 'Sms'
         ? Array < SmsGetPayload<S['include'][P]>>  :
+        P extends 'FCM'
+        ? Array < FCMGetPayload<S['include'][P]>>  :
         P extends '_count'
         ? ProviderCountOutputTypeGetPayload<S['include'][P]> : never
   } 
@@ -1179,6 +1267,8 @@ export namespace Prisma {
   : 
           P extends 'Sms'
         ? Array < SmsGetPayload<S['select'][P]>>  :
+        P extends 'FCM'
+        ? Array < FCMGetPayload<S['select'][P]>>  :
         P extends '_count'
         ? ProviderCountOutputTypeGetPayload<S['select'][P]> : never
   } 
@@ -1521,6 +1611,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
     Sms<T extends SmsFindManyArgs = {}>(args?: Subset<T, SmsFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Sms>>, PrismaPromise<Array<SmsGetPayload<T>>>>;
+
+    FCM<T extends FCMFindManyArgs = {}>(args?: Subset<T, FCMFindManyArgs>): CheckSelect<T, PrismaPromise<Array<FCM>>, PrismaPromise<Array<FCMGetPayload<T>>>>;
 
     private get _document();
     /**
@@ -2802,6 +2894,973 @@ export namespace Prisma {
 
 
   /**
+   * Model FCM
+   */
+
+
+  export type AggregateFCM = {
+    _count: FCMCountAggregateOutputType | null
+    _avg: FCMAvgAggregateOutputType | null
+    _sum: FCMSumAggregateOutputType | null
+    _min: FCMMinAggregateOutputType | null
+    _max: FCMMaxAggregateOutputType | null
+  }
+
+  export type FCMAvgAggregateOutputType = {
+    id: number | null
+    retries: number | null
+    providerId: number | null
+  }
+
+  export type FCMSumAggregateOutputType = {
+    id: bigint | null
+    retries: number | null
+    providerId: number | null
+  }
+
+  export type FCMMinAggregateOutputType = {
+    createdAt: Date | null
+    updatedAt: Date | null
+    id: bigint | null
+    deviceId: string | null
+    user: string | null
+    org: string | null
+    text: string | null
+    type: TextType | null
+    status: Status | null
+    retries: number | null
+    providerMessageId: string | null
+    providerId: number | null
+  }
+
+  export type FCMMaxAggregateOutputType = {
+    createdAt: Date | null
+    updatedAt: Date | null
+    id: bigint | null
+    deviceId: string | null
+    user: string | null
+    org: string | null
+    text: string | null
+    type: TextType | null
+    status: Status | null
+    retries: number | null
+    providerMessageId: string | null
+    providerId: number | null
+  }
+
+  export type FCMCountAggregateOutputType = {
+    createdAt: number
+    updatedAt: number
+    id: number
+    deviceId: number
+    user: number
+    org: number
+    text: number
+    type: number
+    status: number
+    retries: number
+    providerMessageId: number
+    meta: number
+    providerId: number
+    _all: number
+  }
+
+
+  export type FCMAvgAggregateInputType = {
+    id?: true
+    retries?: true
+    providerId?: true
+  }
+
+  export type FCMSumAggregateInputType = {
+    id?: true
+    retries?: true
+    providerId?: true
+  }
+
+  export type FCMMinAggregateInputType = {
+    createdAt?: true
+    updatedAt?: true
+    id?: true
+    deviceId?: true
+    user?: true
+    org?: true
+    text?: true
+    type?: true
+    status?: true
+    retries?: true
+    providerMessageId?: true
+    providerId?: true
+  }
+
+  export type FCMMaxAggregateInputType = {
+    createdAt?: true
+    updatedAt?: true
+    id?: true
+    deviceId?: true
+    user?: true
+    org?: true
+    text?: true
+    type?: true
+    status?: true
+    retries?: true
+    providerMessageId?: true
+    providerId?: true
+  }
+
+  export type FCMCountAggregateInputType = {
+    createdAt?: true
+    updatedAt?: true
+    id?: true
+    deviceId?: true
+    user?: true
+    org?: true
+    text?: true
+    type?: true
+    status?: true
+    retries?: true
+    providerMessageId?: true
+    meta?: true
+    providerId?: true
+    _all?: true
+  }
+
+  export type FCMAggregateArgs = {
+    /**
+     * Filter which FCM to aggregate.
+     * 
+    **/
+    where?: FCMWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FCMS to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<FCMOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     * 
+    **/
+    cursor?: FCMWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FCMS from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FCMS.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned FCMS
+    **/
+    _count?: true | FCMCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: FCMAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: FCMSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FCMMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FCMMaxAggregateInputType
+  }
+
+  export type GetFCMAggregateType<T extends FCMAggregateArgs> = {
+        [P in keyof T & keyof AggregateFCM]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFCM[P]>
+      : GetScalarType<T[P], AggregateFCM[P]>
+  }
+
+
+
+
+  export type FCMGroupByArgs = {
+    where?: FCMWhereInput
+    orderBy?: Enumerable<FCMOrderByWithAggregationInput>
+    by: Array<FCMScalarFieldEnum>
+    having?: FCMScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FCMCountAggregateInputType | true
+    _avg?: FCMAvgAggregateInputType
+    _sum?: FCMSumAggregateInputType
+    _min?: FCMMinAggregateInputType
+    _max?: FCMMaxAggregateInputType
+  }
+
+
+  export type FCMGroupByOutputType = {
+    createdAt: Date
+    updatedAt: Date
+    id: bigint
+    deviceId: string
+    user: string
+    org: string
+    text: string
+    type: TextType
+    status: Status
+    retries: number
+    providerMessageId: string | null
+    meta: JsonValue | null
+    providerId: number | null
+    _count: FCMCountAggregateOutputType | null
+    _avg: FCMAvgAggregateOutputType | null
+    _sum: FCMSumAggregateOutputType | null
+    _min: FCMMinAggregateOutputType | null
+    _max: FCMMaxAggregateOutputType | null
+  }
+
+  type GetFCMGroupByPayload<T extends FCMGroupByArgs> = Promise<
+    Array<
+      PickArray<FCMGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FCMGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FCMGroupByOutputType[P]>
+            : GetScalarType<T[P], FCMGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FCMSelect = {
+    createdAt?: boolean
+    updatedAt?: boolean
+    id?: boolean
+    deviceId?: boolean
+    user?: boolean
+    org?: boolean
+    text?: boolean
+    type?: boolean
+    status?: boolean
+    retries?: boolean
+    providerMessageId?: boolean
+    meta?: boolean
+    Audit?: boolean | AuditFindManyArgs
+    Provider?: boolean | ProviderArgs
+    providerId?: boolean
+    _count?: boolean | FCMCountOutputTypeArgs
+  }
+
+  export type FCMInclude = {
+    Audit?: boolean | AuditFindManyArgs
+    Provider?: boolean | ProviderArgs
+    _count?: boolean | FCMCountOutputTypeArgs
+  }
+
+  export type FCMGetPayload<
+    S extends boolean | null | undefined | FCMArgs,
+    U = keyof S
+      > = S extends true
+        ? FCM
+    : S extends undefined
+    ? never
+    : S extends FCMArgs | FCMFindManyArgs
+    ?'include' extends U
+    ? FCM  & {
+    [P in TrueKeys<S['include']>]: 
+          P extends 'Audit'
+        ? Array < AuditGetPayload<S['include'][P]>>  :
+        P extends 'Provider'
+        ? ProviderGetPayload<S['include'][P]> | null :
+        P extends '_count'
+        ? FCMCountOutputTypeGetPayload<S['include'][P]> : never
+  } 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]: P extends keyof FCM ?FCM [P]
+  : 
+          P extends 'Audit'
+        ? Array < AuditGetPayload<S['select'][P]>>  :
+        P extends 'Provider'
+        ? ProviderGetPayload<S['select'][P]> | null :
+        P extends '_count'
+        ? FCMCountOutputTypeGetPayload<S['select'][P]> : never
+  } 
+    : FCM
+  : FCM
+
+
+  type FCMCountArgs = Merge<
+    Omit<FCMFindManyArgs, 'select' | 'include'> & {
+      select?: FCMCountAggregateInputType | true
+    }
+  >
+
+  export interface FCMDelegate<GlobalRejectSettings> {
+    /**
+     * Find zero or one FCM that matches the filter.
+     * @param {FCMFindUniqueArgs} args - Arguments to find a FCM
+     * @example
+     * // Get one FCM
+     * const fCM = await prisma.fCM.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends FCMFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, FCMFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'FCM'> extends True ? CheckSelect<T, Prisma__FCMClient<FCM>, Prisma__FCMClient<FCMGetPayload<T>>> : CheckSelect<T, Prisma__FCMClient<FCM | null >, Prisma__FCMClient<FCMGetPayload<T> | null >>
+
+    /**
+     * Find the first FCM that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FCMFindFirstArgs} args - Arguments to find a FCM
+     * @example
+     * // Get one FCM
+     * const fCM = await prisma.fCM.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends FCMFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, FCMFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'FCM'> extends True ? CheckSelect<T, Prisma__FCMClient<FCM>, Prisma__FCMClient<FCMGetPayload<T>>> : CheckSelect<T, Prisma__FCMClient<FCM | null >, Prisma__FCMClient<FCMGetPayload<T> | null >>
+
+    /**
+     * Find zero or more FCMS that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FCMFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all FCMS
+     * const fCMS = await prisma.fCM.findMany()
+     * 
+     * // Get first 10 FCMS
+     * const fCMS = await prisma.fCM.findMany({ take: 10 })
+     * 
+     * // Only select the `createdAt`
+     * const fCMWithCreatedAtOnly = await prisma.fCM.findMany({ select: { createdAt: true } })
+     * 
+    **/
+    findMany<T extends FCMFindManyArgs>(
+      args?: SelectSubset<T, FCMFindManyArgs>
+    ): CheckSelect<T, PrismaPromise<Array<FCM>>, PrismaPromise<Array<FCMGetPayload<T>>>>
+
+    /**
+     * Create a FCM.
+     * @param {FCMCreateArgs} args - Arguments to create a FCM.
+     * @example
+     * // Create one FCM
+     * const FCM = await prisma.fCM.create({
+     *   data: {
+     *     // ... data to create a FCM
+     *   }
+     * })
+     * 
+    **/
+    create<T extends FCMCreateArgs>(
+      args: SelectSubset<T, FCMCreateArgs>
+    ): CheckSelect<T, Prisma__FCMClient<FCM>, Prisma__FCMClient<FCMGetPayload<T>>>
+
+    /**
+     * Create many FCMS.
+     *     @param {FCMCreateManyArgs} args - Arguments to create many FCMS.
+     *     @example
+     *     // Create many FCMS
+     *     const fCM = await prisma.fCM.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends FCMCreateManyArgs>(
+      args?: SelectSubset<T, FCMCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a FCM.
+     * @param {FCMDeleteArgs} args - Arguments to delete one FCM.
+     * @example
+     * // Delete one FCM
+     * const FCM = await prisma.fCM.delete({
+     *   where: {
+     *     // ... filter to delete one FCM
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends FCMDeleteArgs>(
+      args: SelectSubset<T, FCMDeleteArgs>
+    ): CheckSelect<T, Prisma__FCMClient<FCM>, Prisma__FCMClient<FCMGetPayload<T>>>
+
+    /**
+     * Update one FCM.
+     * @param {FCMUpdateArgs} args - Arguments to update one FCM.
+     * @example
+     * // Update one FCM
+     * const fCM = await prisma.fCM.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends FCMUpdateArgs>(
+      args: SelectSubset<T, FCMUpdateArgs>
+    ): CheckSelect<T, Prisma__FCMClient<FCM>, Prisma__FCMClient<FCMGetPayload<T>>>
+
+    /**
+     * Delete zero or more FCMS.
+     * @param {FCMDeleteManyArgs} args - Arguments to filter FCMS to delete.
+     * @example
+     * // Delete a few FCMS
+     * const { count } = await prisma.fCM.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends FCMDeleteManyArgs>(
+      args?: SelectSubset<T, FCMDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FCMS.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FCMUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many FCMS
+     * const fCM = await prisma.fCM.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends FCMUpdateManyArgs>(
+      args: SelectSubset<T, FCMUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one FCM.
+     * @param {FCMUpsertArgs} args - Arguments to update or create a FCM.
+     * @example
+     * // Update or create a FCM
+     * const fCM = await prisma.fCM.upsert({
+     *   create: {
+     *     // ... data to create a FCM
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the FCM we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends FCMUpsertArgs>(
+      args: SelectSubset<T, FCMUpsertArgs>
+    ): CheckSelect<T, Prisma__FCMClient<FCM>, Prisma__FCMClient<FCMGetPayload<T>>>
+
+    /**
+     * Count the number of FCMS.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FCMCountArgs} args - Arguments to filter FCMS to count.
+     * @example
+     * // Count the number of FCMS
+     * const count = await prisma.fCM.count({
+     *   where: {
+     *     // ... the filter for the FCMS we want to count
+     *   }
+     * })
+    **/
+    count<T extends FCMCountArgs>(
+      args?: Subset<T, FCMCountArgs>,
+    ): PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FCMCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a FCM.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FCMAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FCMAggregateArgs>(args: Subset<T, FCMAggregateArgs>): PrismaPromise<GetFCMAggregateType<T>>
+
+    /**
+     * Group by FCM.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FCMGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FCMGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FCMGroupByArgs['orderBy'] }
+        : { orderBy?: FCMGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FCMGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFCMGroupByPayload<T> : Promise<InputErrors>
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for FCM.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__FCMClient<T> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+
+    Audit<T extends AuditFindManyArgs = {}>(args?: Subset<T, AuditFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Audit>>, PrismaPromise<Array<AuditGetPayload<T>>>>;
+
+    Provider<T extends ProviderArgs = {}>(args?: Subset<T, ProviderArgs>): CheckSelect<T, Prisma__ProviderClient<Provider | null >, Prisma__ProviderClient<ProviderGetPayload<T> | null >>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+  // Custom InputTypes
+
+  /**
+   * FCM findUnique
+   */
+  export type FCMFindUniqueArgs = {
+    /**
+     * Select specific fields to fetch from the FCM
+     * 
+    **/
+    select?: FCMSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: FCMInclude | null
+    /**
+     * Throw an Error if a FCM can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which FCM to fetch.
+     * 
+    **/
+    where: FCMWhereUniqueInput
+  }
+
+
+  /**
+   * FCM findFirst
+   */
+  export type FCMFindFirstArgs = {
+    /**
+     * Select specific fields to fetch from the FCM
+     * 
+    **/
+    select?: FCMSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: FCMInclude | null
+    /**
+     * Throw an Error if a FCM can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which FCM to fetch.
+     * 
+    **/
+    where?: FCMWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FCMS to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<FCMOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FCMS.
+     * 
+    **/
+    cursor?: FCMWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FCMS from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FCMS.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FCMS.
+     * 
+    **/
+    distinct?: Enumerable<FCMScalarFieldEnum>
+  }
+
+
+  /**
+   * FCM findMany
+   */
+  export type FCMFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the FCM
+     * 
+    **/
+    select?: FCMSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: FCMInclude | null
+    /**
+     * Filter, which FCMS to fetch.
+     * 
+    **/
+    where?: FCMWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FCMS to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<FCMOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing FCMS.
+     * 
+    **/
+    cursor?: FCMWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FCMS from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FCMS.
+     * 
+    **/
+    skip?: number
+    distinct?: Enumerable<FCMScalarFieldEnum>
+  }
+
+
+  /**
+   * FCM create
+   */
+  export type FCMCreateArgs = {
+    /**
+     * Select specific fields to fetch from the FCM
+     * 
+    **/
+    select?: FCMSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: FCMInclude | null
+    /**
+     * The data needed to create a FCM.
+     * 
+    **/
+    data: XOR<FCMCreateInput, FCMUncheckedCreateInput>
+  }
+
+
+  /**
+   * FCM createMany
+   */
+  export type FCMCreateManyArgs = {
+    data: Enumerable<FCMCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * FCM update
+   */
+  export type FCMUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the FCM
+     * 
+    **/
+    select?: FCMSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: FCMInclude | null
+    /**
+     * The data needed to update a FCM.
+     * 
+    **/
+    data: XOR<FCMUpdateInput, FCMUncheckedUpdateInput>
+    /**
+     * Choose, which FCM to update.
+     * 
+    **/
+    where: FCMWhereUniqueInput
+  }
+
+
+  /**
+   * FCM updateMany
+   */
+  export type FCMUpdateManyArgs = {
+    data: XOR<FCMUpdateManyMutationInput, FCMUncheckedUpdateManyInput>
+    where?: FCMWhereInput
+  }
+
+
+  /**
+   * FCM upsert
+   */
+  export type FCMUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the FCM
+     * 
+    **/
+    select?: FCMSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: FCMInclude | null
+    /**
+     * The filter to search for the FCM to update in case it exists.
+     * 
+    **/
+    where: FCMWhereUniqueInput
+    /**
+     * In case the FCM found by the `where` argument doesn't exist, create a new FCM with this data.
+     * 
+    **/
+    create: XOR<FCMCreateInput, FCMUncheckedCreateInput>
+    /**
+     * In case the FCM was found with the provided `where` argument, update it with this data.
+     * 
+    **/
+    update: XOR<FCMUpdateInput, FCMUncheckedUpdateInput>
+  }
+
+
+  /**
+   * FCM delete
+   */
+  export type FCMDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the FCM
+     * 
+    **/
+    select?: FCMSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: FCMInclude | null
+    /**
+     * Filter which FCM to delete.
+     * 
+    **/
+    where: FCMWhereUniqueInput
+  }
+
+
+  /**
+   * FCM deleteMany
+   */
+  export type FCMDeleteManyArgs = {
+    where?: FCMWhereInput
+  }
+
+
+  /**
+   * FCM without action
+   */
+  export type FCMArgs = {
+    /**
+     * Select specific fields to fetch from the FCM
+     * 
+    **/
+    select?: FCMSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: FCMInclude | null
+  }
+
+
+
+  /**
    * Model Audit
    */
 
@@ -2817,11 +3876,13 @@ export namespace Prisma {
   export type AuditAvgAggregateOutputType = {
     id: number | null
     smsId: number | null
+    fCMId: number | null
   }
 
   export type AuditSumAggregateOutputType = {
     id: bigint | null
     smsId: bigint | null
+    fCMId: bigint | null
   }
 
   export type AuditMinAggregateOutputType = {
@@ -2830,6 +3891,7 @@ export namespace Prisma {
     id: bigint | null
     smsId: bigint | null
     event: Event | null
+    fCMId: bigint | null
   }
 
   export type AuditMaxAggregateOutputType = {
@@ -2838,6 +3900,7 @@ export namespace Prisma {
     id: bigint | null
     smsId: bigint | null
     event: Event | null
+    fCMId: bigint | null
   }
 
   export type AuditCountAggregateOutputType = {
@@ -2846,6 +3909,7 @@ export namespace Prisma {
     id: number
     smsId: number
     event: number
+    fCMId: number
     _all: number
   }
 
@@ -2853,11 +3917,13 @@ export namespace Prisma {
   export type AuditAvgAggregateInputType = {
     id?: true
     smsId?: true
+    fCMId?: true
   }
 
   export type AuditSumAggregateInputType = {
     id?: true
     smsId?: true
+    fCMId?: true
   }
 
   export type AuditMinAggregateInputType = {
@@ -2866,6 +3932,7 @@ export namespace Prisma {
     id?: true
     smsId?: true
     event?: true
+    fCMId?: true
   }
 
   export type AuditMaxAggregateInputType = {
@@ -2874,6 +3941,7 @@ export namespace Prisma {
     id?: true
     smsId?: true
     event?: true
+    fCMId?: true
   }
 
   export type AuditCountAggregateInputType = {
@@ -2882,6 +3950,7 @@ export namespace Prisma {
     id?: true
     smsId?: true
     event?: true
+    fCMId?: true
     _all?: true
   }
 
@@ -2983,6 +4052,7 @@ export namespace Prisma {
     id: bigint
     smsId: bigint
     event: Event
+    fCMId: bigint | null
     _count: AuditCountAggregateOutputType | null
     _avg: AuditAvgAggregateOutputType | null
     _sum: AuditSumAggregateOutputType | null
@@ -3011,10 +4081,13 @@ export namespace Prisma {
     smsId?: boolean
     sms?: boolean | SmsArgs
     event?: boolean
+    FCM?: boolean | FCMArgs
+    fCMId?: boolean
   }
 
   export type AuditInclude = {
     sms?: boolean | SmsArgs
+    FCM?: boolean | FCMArgs
   }
 
   export type AuditGetPayload<
@@ -3029,14 +4102,18 @@ export namespace Prisma {
     ? Audit  & {
     [P in TrueKeys<S['include']>]: 
           P extends 'sms'
-        ? SmsGetPayload<S['include'][P]> : never
+        ? SmsGetPayload<S['include'][P]> :
+        P extends 'FCM'
+        ? FCMGetPayload<S['include'][P]> | null : never
   } 
     : 'select' extends U
     ? {
     [P in TrueKeys<S['select']>]: P extends keyof Audit ?Audit [P]
   : 
           P extends 'sms'
-        ? SmsGetPayload<S['select'][P]> : never
+        ? SmsGetPayload<S['select'][P]> :
+        P extends 'FCM'
+        ? FCMGetPayload<S['select'][P]> | null : never
   } 
     : Audit
   : Audit
@@ -3377,6 +4454,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
     sms<T extends SmsArgs = {}>(args?: Subset<T, SmsArgs>): CheckSelect<T, Prisma__SmsClient<Sms | null >, Prisma__SmsClient<SmsGetPayload<T> | null >>;
+
+    FCM<T extends FCMArgs = {}>(args?: Subset<T, FCMArgs>): CheckSelect<T, Prisma__FCMClient<FCM | null >, Prisma__FCMClient<FCMGetPayload<T> | null >>;
 
     private get _document();
     /**
@@ -3729,12 +4808,32 @@ export namespace Prisma {
   export type SmsScalarFieldEnum = (typeof SmsScalarFieldEnum)[keyof typeof SmsScalarFieldEnum]
 
 
+  export const FCMScalarFieldEnum: {
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    id: 'id',
+    deviceId: 'deviceId',
+    user: 'user',
+    org: 'org',
+    text: 'text',
+    type: 'type',
+    status: 'status',
+    retries: 'retries',
+    providerMessageId: 'providerMessageId',
+    meta: 'meta',
+    providerId: 'providerId'
+  };
+
+  export type FCMScalarFieldEnum = (typeof FCMScalarFieldEnum)[keyof typeof FCMScalarFieldEnum]
+
+
   export const AuditScalarFieldEnum: {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     id: 'id',
     smsId: 'smsId',
-    event: 'event'
+    event: 'event',
+    fCMId: 'fCMId'
   };
 
   export type AuditScalarFieldEnum = (typeof AuditScalarFieldEnum)[keyof typeof AuditScalarFieldEnum]
@@ -3797,6 +4896,7 @@ export namespace Prisma {
     config?: JsonFilter
     unitCost?: FloatFilter | number
     Sms?: SmsListRelationFilter
+    FCM?: FCMListRelationFilter
   }
 
   export type ProviderOrderByWithRelationInput = {
@@ -3808,6 +4908,7 @@ export namespace Prisma {
     config?: SortOrder
     unitCost?: SortOrder
     Sms?: SmsOrderByRelationAggregateInput
+    FCM?: FCMOrderByRelationAggregateInput
   }
 
   export type ProviderWhereUniqueInput = {
@@ -3925,6 +5026,89 @@ export namespace Prisma {
     meta?: JsonNullableWithAggregatesFilter
   }
 
+  export type FCMWhereInput = {
+    AND?: Enumerable<FCMWhereInput>
+    OR?: Enumerable<FCMWhereInput>
+    NOT?: Enumerable<FCMWhereInput>
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    id?: BigIntFilter | bigint | number
+    deviceId?: StringFilter | string
+    user?: StringFilter | string
+    org?: StringFilter | string
+    text?: StringFilter | string
+    type?: EnumTextTypeFilter | TextType
+    status?: EnumStatusFilter | Status
+    retries?: IntFilter | number
+    providerMessageId?: StringNullableFilter | string | null
+    meta?: JsonNullableFilter
+    Audit?: AuditListRelationFilter
+    Provider?: XOR<ProviderRelationFilter, ProviderWhereInput> | null
+    providerId?: IntNullableFilter | number | null
+  }
+
+  export type FCMOrderByWithRelationInput = {
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    id?: SortOrder
+    deviceId?: SortOrder
+    user?: SortOrder
+    org?: SortOrder
+    text?: SortOrder
+    type?: SortOrder
+    status?: SortOrder
+    retries?: SortOrder
+    providerMessageId?: SortOrder
+    meta?: SortOrder
+    Audit?: AuditOrderByRelationAggregateInput
+    Provider?: ProviderOrderByWithRelationInput
+    providerId?: SortOrder
+  }
+
+  export type FCMWhereUniqueInput = {
+    id?: bigint | number
+  }
+
+  export type FCMOrderByWithAggregationInput = {
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    id?: SortOrder
+    deviceId?: SortOrder
+    user?: SortOrder
+    org?: SortOrder
+    text?: SortOrder
+    type?: SortOrder
+    status?: SortOrder
+    retries?: SortOrder
+    providerMessageId?: SortOrder
+    meta?: SortOrder
+    providerId?: SortOrder
+    _count?: FCMCountOrderByAggregateInput
+    _avg?: FCMAvgOrderByAggregateInput
+    _max?: FCMMaxOrderByAggregateInput
+    _min?: FCMMinOrderByAggregateInput
+    _sum?: FCMSumOrderByAggregateInput
+  }
+
+  export type FCMScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<FCMScalarWhereWithAggregatesInput>
+    OR?: Enumerable<FCMScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<FCMScalarWhereWithAggregatesInput>
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+    id?: BigIntWithAggregatesFilter | bigint | number
+    deviceId?: StringWithAggregatesFilter | string
+    user?: StringWithAggregatesFilter | string
+    org?: StringWithAggregatesFilter | string
+    text?: StringWithAggregatesFilter | string
+    type?: EnumTextTypeWithAggregatesFilter | TextType
+    status?: EnumStatusWithAggregatesFilter | Status
+    retries?: IntWithAggregatesFilter | number
+    providerMessageId?: StringNullableWithAggregatesFilter | string | null
+    meta?: JsonNullableWithAggregatesFilter
+    providerId?: IntNullableWithAggregatesFilter | number | null
+  }
+
   export type AuditWhereInput = {
     AND?: Enumerable<AuditWhereInput>
     OR?: Enumerable<AuditWhereInput>
@@ -3935,6 +5119,8 @@ export namespace Prisma {
     smsId?: BigIntFilter | bigint | number
     sms?: XOR<SmsRelationFilter, SmsWhereInput>
     event?: EnumEventFilter | Event
+    FCM?: XOR<FCMRelationFilter, FCMWhereInput> | null
+    fCMId?: BigIntNullableFilter | bigint | number | null
   }
 
   export type AuditOrderByWithRelationInput = {
@@ -3944,6 +5130,8 @@ export namespace Prisma {
     smsId?: SortOrder
     sms?: SmsOrderByWithRelationInput
     event?: SortOrder
+    FCM?: FCMOrderByWithRelationInput
+    fCMId?: SortOrder
   }
 
   export type AuditWhereUniqueInput = {
@@ -3956,6 +5144,7 @@ export namespace Prisma {
     id?: SortOrder
     smsId?: SortOrder
     event?: SortOrder
+    fCMId?: SortOrder
     _count?: AuditCountOrderByAggregateInput
     _avg?: AuditAvgOrderByAggregateInput
     _max?: AuditMaxOrderByAggregateInput
@@ -3972,6 +5161,7 @@ export namespace Prisma {
     id?: BigIntWithAggregatesFilter | bigint | number
     smsId?: BigIntWithAggregatesFilter | bigint | number
     event?: EnumEventWithAggregatesFilter | Event
+    fCMId?: BigIntNullableWithAggregatesFilter | bigint | number | null
   }
 
   export type ProviderCreateInput = {
@@ -3982,6 +5172,7 @@ export namespace Prisma {
     config: JsonNullValueInput | InputJsonValue
     unitCost: number
     Sms?: SmsCreateNestedManyWithoutProviderInput
+    FCM?: FCMCreateNestedManyWithoutProviderInput
   }
 
   export type ProviderUncheckedCreateInput = {
@@ -3993,6 +5184,7 @@ export namespace Prisma {
     config: JsonNullValueInput | InputJsonValue
     unitCost: number
     Sms?: SmsUncheckedCreateNestedManyWithoutProviderInput
+    FCM?: FCMUncheckedCreateNestedManyWithoutProviderInput
   }
 
   export type ProviderUpdateInput = {
@@ -4003,6 +5195,7 @@ export namespace Prisma {
     config?: JsonNullValueInput | InputJsonValue
     unitCost?: FloatFieldUpdateOperationsInput | number
     Sms?: SmsUpdateManyWithoutProviderInput
+    FCM?: FCMUpdateManyWithoutProviderInput
   }
 
   export type ProviderUncheckedUpdateInput = {
@@ -4014,6 +5207,7 @@ export namespace Prisma {
     config?: JsonNullValueInput | InputJsonValue
     unitCost?: FloatFieldUpdateOperationsInput | number
     Sms?: SmsUncheckedUpdateManyWithoutProviderInput
+    FCM?: FCMUncheckedUpdateManyWithoutProviderInput
   }
 
   export type ProviderCreateManyInput = {
@@ -4160,12 +5354,128 @@ export namespace Prisma {
     meta?: NullableJsonNullValueInput | InputJsonValue
   }
 
+  export type FCMCreateInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    id?: bigint | number
+    deviceId: string
+    user: string
+    org: string
+    text: string
+    type: TextType
+    status?: Status
+    retries?: number
+    providerMessageId?: string | null
+    meta?: NullableJsonNullValueInput | InputJsonValue
+    Audit?: AuditCreateNestedManyWithoutFCMInput
+    Provider?: ProviderCreateNestedOneWithoutFCMInput
+  }
+
+  export type FCMUncheckedCreateInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    id?: bigint | number
+    deviceId: string
+    user: string
+    org: string
+    text: string
+    type: TextType
+    status?: Status
+    retries?: number
+    providerMessageId?: string | null
+    meta?: NullableJsonNullValueInput | InputJsonValue
+    providerId?: number | null
+    Audit?: AuditUncheckedCreateNestedManyWithoutFCMInput
+  }
+
+  export type FCMUpdateInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    deviceId?: StringFieldUpdateOperationsInput | string
+    user?: StringFieldUpdateOperationsInput | string
+    org?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    type?: EnumTextTypeFieldUpdateOperationsInput | TextType
+    status?: EnumStatusFieldUpdateOperationsInput | Status
+    retries?: IntFieldUpdateOperationsInput | number
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    meta?: NullableJsonNullValueInput | InputJsonValue
+    Audit?: AuditUpdateManyWithoutFCMInput
+    Provider?: ProviderUpdateOneWithoutFCMInput
+  }
+
+  export type FCMUncheckedUpdateInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    deviceId?: StringFieldUpdateOperationsInput | string
+    user?: StringFieldUpdateOperationsInput | string
+    org?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    type?: EnumTextTypeFieldUpdateOperationsInput | TextType
+    status?: EnumStatusFieldUpdateOperationsInput | Status
+    retries?: IntFieldUpdateOperationsInput | number
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    meta?: NullableJsonNullValueInput | InputJsonValue
+    providerId?: NullableIntFieldUpdateOperationsInput | number | null
+    Audit?: AuditUncheckedUpdateManyWithoutFCMInput
+  }
+
+  export type FCMCreateManyInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    id?: bigint | number
+    deviceId: string
+    user: string
+    org: string
+    text: string
+    type: TextType
+    status?: Status
+    retries?: number
+    providerMessageId?: string | null
+    meta?: NullableJsonNullValueInput | InputJsonValue
+    providerId?: number | null
+  }
+
+  export type FCMUpdateManyMutationInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    deviceId?: StringFieldUpdateOperationsInput | string
+    user?: StringFieldUpdateOperationsInput | string
+    org?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    type?: EnumTextTypeFieldUpdateOperationsInput | TextType
+    status?: EnumStatusFieldUpdateOperationsInput | Status
+    retries?: IntFieldUpdateOperationsInput | number
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    meta?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type FCMUncheckedUpdateManyInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    deviceId?: StringFieldUpdateOperationsInput | string
+    user?: StringFieldUpdateOperationsInput | string
+    org?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    type?: EnumTextTypeFieldUpdateOperationsInput | TextType
+    status?: EnumStatusFieldUpdateOperationsInput | Status
+    retries?: IntFieldUpdateOperationsInput | number
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    meta?: NullableJsonNullValueInput | InputJsonValue
+    providerId?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
   export type AuditCreateInput = {
     createdAt?: Date | string
     updatedAt?: Date | string
     id?: bigint | number
     event: Event
     sms: SmsCreateNestedOneWithoutAuditInput
+    FCM?: FCMCreateNestedOneWithoutAuditInput
   }
 
   export type AuditUncheckedCreateInput = {
@@ -4174,6 +5484,7 @@ export namespace Prisma {
     id?: bigint | number
     smsId: bigint | number
     event: Event
+    fCMId?: bigint | number | null
   }
 
   export type AuditUpdateInput = {
@@ -4182,6 +5493,7 @@ export namespace Prisma {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     event?: EnumEventFieldUpdateOperationsInput | Event
     sms?: SmsUpdateOneRequiredWithoutAuditInput
+    FCM?: FCMUpdateOneWithoutAuditInput
   }
 
   export type AuditUncheckedUpdateInput = {
@@ -4190,6 +5502,7 @@ export namespace Prisma {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     smsId?: BigIntFieldUpdateOperationsInput | bigint | number
     event?: EnumEventFieldUpdateOperationsInput | Event
+    fCMId?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   }
 
   export type AuditCreateManyInput = {
@@ -4198,6 +5511,7 @@ export namespace Prisma {
     id?: bigint | number
     smsId: bigint | number
     event: Event
+    fCMId?: bigint | number | null
   }
 
   export type AuditUpdateManyMutationInput = {
@@ -4213,6 +5527,7 @@ export namespace Prisma {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     smsId?: BigIntFieldUpdateOperationsInput | bigint | number
     event?: EnumEventFieldUpdateOperationsInput | Event
+    fCMId?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   }
 
   export type DateTimeFilter = {
@@ -4287,7 +5602,17 @@ export namespace Prisma {
     none?: SmsWhereInput
   }
 
+  export type FCMListRelationFilter = {
+    every?: FCMWhereInput
+    some?: FCMWhereInput
+    none?: FCMWhereInput
+  }
+
   export type SmsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type FCMOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -4429,8 +5754,8 @@ export namespace Prisma {
   }
 
   export type ProviderRelationFilter = {
-    is?: ProviderWhereInput
-    isNot?: ProviderWhereInput
+    is?: ProviderWhereInput | null
+    isNot?: ProviderWhereInput | null
   }
 
   export type EnumTextTypeFilter = {
@@ -4609,6 +5934,91 @@ export namespace Prisma {
     _max?: NestedJsonNullableFilter
   }
 
+  export type IntNullableFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntNullableFilter | number | null
+  }
+
+  export type FCMCountOrderByAggregateInput = {
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    id?: SortOrder
+    deviceId?: SortOrder
+    user?: SortOrder
+    org?: SortOrder
+    text?: SortOrder
+    type?: SortOrder
+    status?: SortOrder
+    retries?: SortOrder
+    providerMessageId?: SortOrder
+    meta?: SortOrder
+    providerId?: SortOrder
+  }
+
+  export type FCMAvgOrderByAggregateInput = {
+    id?: SortOrder
+    retries?: SortOrder
+    providerId?: SortOrder
+  }
+
+  export type FCMMaxOrderByAggregateInput = {
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    id?: SortOrder
+    deviceId?: SortOrder
+    user?: SortOrder
+    org?: SortOrder
+    text?: SortOrder
+    type?: SortOrder
+    status?: SortOrder
+    retries?: SortOrder
+    providerMessageId?: SortOrder
+    providerId?: SortOrder
+  }
+
+  export type FCMMinOrderByAggregateInput = {
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    id?: SortOrder
+    deviceId?: SortOrder
+    user?: SortOrder
+    org?: SortOrder
+    text?: SortOrder
+    type?: SortOrder
+    status?: SortOrder
+    retries?: SortOrder
+    providerMessageId?: SortOrder
+    providerId?: SortOrder
+  }
+
+  export type FCMSumOrderByAggregateInput = {
+    id?: SortOrder
+    retries?: SortOrder
+    providerId?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntNullableWithAggregatesFilter | number | null
+    _count?: NestedIntNullableFilter
+    _avg?: NestedFloatNullableFilter
+    _sum?: NestedIntNullableFilter
+    _min?: NestedIntNullableFilter
+    _max?: NestedIntNullableFilter
+  }
+
   export type SmsRelationFilter = {
     is?: SmsWhereInput
     isNot?: SmsWhereInput
@@ -4621,17 +6031,35 @@ export namespace Prisma {
     not?: NestedEnumEventFilter | Event
   }
 
+  export type FCMRelationFilter = {
+    is?: FCMWhereInput | null
+    isNot?: FCMWhereInput | null
+  }
+
+  export type BigIntNullableFilter = {
+    equals?: bigint | number | null
+    in?: Enumerable<bigint> | Enumerable<number> | null
+    notIn?: Enumerable<bigint> | Enumerable<number> | null
+    lt?: bigint | number
+    lte?: bigint | number
+    gt?: bigint | number
+    gte?: bigint | number
+    not?: NestedBigIntNullableFilter | bigint | number | null
+  }
+
   export type AuditCountOrderByAggregateInput = {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     id?: SortOrder
     smsId?: SortOrder
     event?: SortOrder
+    fCMId?: SortOrder
   }
 
   export type AuditAvgOrderByAggregateInput = {
     id?: SortOrder
     smsId?: SortOrder
+    fCMId?: SortOrder
   }
 
   export type AuditMaxOrderByAggregateInput = {
@@ -4640,6 +6068,7 @@ export namespace Prisma {
     id?: SortOrder
     smsId?: SortOrder
     event?: SortOrder
+    fCMId?: SortOrder
   }
 
   export type AuditMinOrderByAggregateInput = {
@@ -4648,11 +6077,13 @@ export namespace Prisma {
     id?: SortOrder
     smsId?: SortOrder
     event?: SortOrder
+    fCMId?: SortOrder
   }
 
   export type AuditSumOrderByAggregateInput = {
     id?: SortOrder
     smsId?: SortOrder
+    fCMId?: SortOrder
   }
 
   export type EnumEventWithAggregatesFilter = {
@@ -4665,6 +6096,22 @@ export namespace Prisma {
     _max?: NestedEnumEventFilter
   }
 
+  export type BigIntNullableWithAggregatesFilter = {
+    equals?: bigint | number | null
+    in?: Enumerable<bigint> | Enumerable<number> | null
+    notIn?: Enumerable<bigint> | Enumerable<number> | null
+    lt?: bigint | number
+    lte?: bigint | number
+    gt?: bigint | number
+    gte?: bigint | number
+    not?: NestedBigIntNullableWithAggregatesFilter | bigint | number | null
+    _count?: NestedIntNullableFilter
+    _avg?: NestedFloatNullableFilter
+    _sum?: NestedBigIntNullableFilter
+    _min?: NestedBigIntNullableFilter
+    _max?: NestedBigIntNullableFilter
+  }
+
   export type SmsCreateNestedManyWithoutProviderInput = {
     create?: XOR<Enumerable<SmsCreateWithoutProviderInput>, Enumerable<SmsUncheckedCreateWithoutProviderInput>>
     connectOrCreate?: Enumerable<SmsCreateOrConnectWithoutProviderInput>
@@ -4672,11 +6119,25 @@ export namespace Prisma {
     connect?: Enumerable<SmsWhereUniqueInput>
   }
 
+  export type FCMCreateNestedManyWithoutProviderInput = {
+    create?: XOR<Enumerable<FCMCreateWithoutProviderInput>, Enumerable<FCMUncheckedCreateWithoutProviderInput>>
+    connectOrCreate?: Enumerable<FCMCreateOrConnectWithoutProviderInput>
+    createMany?: FCMCreateManyProviderInputEnvelope
+    connect?: Enumerable<FCMWhereUniqueInput>
+  }
+
   export type SmsUncheckedCreateNestedManyWithoutProviderInput = {
     create?: XOR<Enumerable<SmsCreateWithoutProviderInput>, Enumerable<SmsUncheckedCreateWithoutProviderInput>>
     connectOrCreate?: Enumerable<SmsCreateOrConnectWithoutProviderInput>
     createMany?: SmsCreateManyProviderInputEnvelope
     connect?: Enumerable<SmsWhereUniqueInput>
+  }
+
+  export type FCMUncheckedCreateNestedManyWithoutProviderInput = {
+    create?: XOR<Enumerable<FCMCreateWithoutProviderInput>, Enumerable<FCMUncheckedCreateWithoutProviderInput>>
+    connectOrCreate?: Enumerable<FCMCreateOrConnectWithoutProviderInput>
+    createMany?: FCMCreateManyProviderInputEnvelope
+    connect?: Enumerable<FCMWhereUniqueInput>
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -4713,6 +6174,20 @@ export namespace Prisma {
     deleteMany?: Enumerable<SmsScalarWhereInput>
   }
 
+  export type FCMUpdateManyWithoutProviderInput = {
+    create?: XOR<Enumerable<FCMCreateWithoutProviderInput>, Enumerable<FCMUncheckedCreateWithoutProviderInput>>
+    connectOrCreate?: Enumerable<FCMCreateOrConnectWithoutProviderInput>
+    upsert?: Enumerable<FCMUpsertWithWhereUniqueWithoutProviderInput>
+    createMany?: FCMCreateManyProviderInputEnvelope
+    set?: Enumerable<FCMWhereUniqueInput>
+    disconnect?: Enumerable<FCMWhereUniqueInput>
+    delete?: Enumerable<FCMWhereUniqueInput>
+    connect?: Enumerable<FCMWhereUniqueInput>
+    update?: Enumerable<FCMUpdateWithWhereUniqueWithoutProviderInput>
+    updateMany?: Enumerable<FCMUpdateManyWithWhereWithoutProviderInput>
+    deleteMany?: Enumerable<FCMScalarWhereInput>
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -4733,6 +6208,20 @@ export namespace Prisma {
     update?: Enumerable<SmsUpdateWithWhereUniqueWithoutProviderInput>
     updateMany?: Enumerable<SmsUpdateManyWithWhereWithoutProviderInput>
     deleteMany?: Enumerable<SmsScalarWhereInput>
+  }
+
+  export type FCMUncheckedUpdateManyWithoutProviderInput = {
+    create?: XOR<Enumerable<FCMCreateWithoutProviderInput>, Enumerable<FCMUncheckedCreateWithoutProviderInput>>
+    connectOrCreate?: Enumerable<FCMCreateOrConnectWithoutProviderInput>
+    upsert?: Enumerable<FCMUpsertWithWhereUniqueWithoutProviderInput>
+    createMany?: FCMCreateManyProviderInputEnvelope
+    set?: Enumerable<FCMWhereUniqueInput>
+    disconnect?: Enumerable<FCMWhereUniqueInput>
+    delete?: Enumerable<FCMWhereUniqueInput>
+    connect?: Enumerable<FCMWhereUniqueInput>
+    update?: Enumerable<FCMUpdateWithWhereUniqueWithoutProviderInput>
+    updateMany?: Enumerable<FCMUpdateManyWithWhereWithoutProviderInput>
+    deleteMany?: Enumerable<FCMScalarWhereInput>
   }
 
   export type ProviderCreateNestedOneWithoutSmsInput = {
@@ -4811,10 +6300,82 @@ export namespace Prisma {
     deleteMany?: Enumerable<AuditScalarWhereInput>
   }
 
+  export type AuditCreateNestedManyWithoutFCMInput = {
+    create?: XOR<Enumerable<AuditCreateWithoutFCMInput>, Enumerable<AuditUncheckedCreateWithoutFCMInput>>
+    connectOrCreate?: Enumerable<AuditCreateOrConnectWithoutFCMInput>
+    createMany?: AuditCreateManyFCMInputEnvelope
+    connect?: Enumerable<AuditWhereUniqueInput>
+  }
+
+  export type ProviderCreateNestedOneWithoutFCMInput = {
+    create?: XOR<ProviderCreateWithoutFCMInput, ProviderUncheckedCreateWithoutFCMInput>
+    connectOrCreate?: ProviderCreateOrConnectWithoutFCMInput
+    connect?: ProviderWhereUniqueInput
+  }
+
+  export type AuditUncheckedCreateNestedManyWithoutFCMInput = {
+    create?: XOR<Enumerable<AuditCreateWithoutFCMInput>, Enumerable<AuditUncheckedCreateWithoutFCMInput>>
+    connectOrCreate?: Enumerable<AuditCreateOrConnectWithoutFCMInput>
+    createMany?: AuditCreateManyFCMInputEnvelope
+    connect?: Enumerable<AuditWhereUniqueInput>
+  }
+
+  export type AuditUpdateManyWithoutFCMInput = {
+    create?: XOR<Enumerable<AuditCreateWithoutFCMInput>, Enumerable<AuditUncheckedCreateWithoutFCMInput>>
+    connectOrCreate?: Enumerable<AuditCreateOrConnectWithoutFCMInput>
+    upsert?: Enumerable<AuditUpsertWithWhereUniqueWithoutFCMInput>
+    createMany?: AuditCreateManyFCMInputEnvelope
+    set?: Enumerable<AuditWhereUniqueInput>
+    disconnect?: Enumerable<AuditWhereUniqueInput>
+    delete?: Enumerable<AuditWhereUniqueInput>
+    connect?: Enumerable<AuditWhereUniqueInput>
+    update?: Enumerable<AuditUpdateWithWhereUniqueWithoutFCMInput>
+    updateMany?: Enumerable<AuditUpdateManyWithWhereWithoutFCMInput>
+    deleteMany?: Enumerable<AuditScalarWhereInput>
+  }
+
+  export type ProviderUpdateOneWithoutFCMInput = {
+    create?: XOR<ProviderCreateWithoutFCMInput, ProviderUncheckedCreateWithoutFCMInput>
+    connectOrCreate?: ProviderCreateOrConnectWithoutFCMInput
+    upsert?: ProviderUpsertWithoutFCMInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: ProviderWhereUniqueInput
+    update?: XOR<ProviderUpdateWithoutFCMInput, ProviderUncheckedUpdateWithoutFCMInput>
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type AuditUncheckedUpdateManyWithoutFCMInput = {
+    create?: XOR<Enumerable<AuditCreateWithoutFCMInput>, Enumerable<AuditUncheckedCreateWithoutFCMInput>>
+    connectOrCreate?: Enumerable<AuditCreateOrConnectWithoutFCMInput>
+    upsert?: Enumerable<AuditUpsertWithWhereUniqueWithoutFCMInput>
+    createMany?: AuditCreateManyFCMInputEnvelope
+    set?: Enumerable<AuditWhereUniqueInput>
+    disconnect?: Enumerable<AuditWhereUniqueInput>
+    delete?: Enumerable<AuditWhereUniqueInput>
+    connect?: Enumerable<AuditWhereUniqueInput>
+    update?: Enumerable<AuditUpdateWithWhereUniqueWithoutFCMInput>
+    updateMany?: Enumerable<AuditUpdateManyWithWhereWithoutFCMInput>
+    deleteMany?: Enumerable<AuditScalarWhereInput>
+  }
+
   export type SmsCreateNestedOneWithoutAuditInput = {
     create?: XOR<SmsCreateWithoutAuditInput, SmsUncheckedCreateWithoutAuditInput>
     connectOrCreate?: SmsCreateOrConnectWithoutAuditInput
     connect?: SmsWhereUniqueInput
+  }
+
+  export type FCMCreateNestedOneWithoutAuditInput = {
+    create?: XOR<FCMCreateWithoutAuditInput, FCMUncheckedCreateWithoutAuditInput>
+    connectOrCreate?: FCMCreateOrConnectWithoutAuditInput
+    connect?: FCMWhereUniqueInput
   }
 
   export type EnumEventFieldUpdateOperationsInput = {
@@ -4827,6 +6388,24 @@ export namespace Prisma {
     upsert?: SmsUpsertWithoutAuditInput
     connect?: SmsWhereUniqueInput
     update?: XOR<SmsUpdateWithoutAuditInput, SmsUncheckedUpdateWithoutAuditInput>
+  }
+
+  export type FCMUpdateOneWithoutAuditInput = {
+    create?: XOR<FCMCreateWithoutAuditInput, FCMUncheckedCreateWithoutAuditInput>
+    connectOrCreate?: FCMCreateOrConnectWithoutAuditInput
+    upsert?: FCMUpsertWithoutAuditInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: FCMWhereUniqueInput
+    update?: XOR<FCMUpdateWithoutAuditInput, FCMUncheckedUpdateWithoutAuditInput>
+  }
+
+  export type NullableBigIntFieldUpdateOperationsInput = {
+    set?: bigint | number | null
+    increment?: bigint | number
+    decrement?: bigint | number
+    multiply?: bigint | number
+    divide?: bigint | number
   }
 
   export type NestedDateTimeFilter = {
@@ -5081,11 +6660,49 @@ export namespace Prisma {
     not?: JsonNullValueFilter | InputJsonValue
   }
 
+  export type NestedIntNullableWithAggregatesFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntNullableWithAggregatesFilter | number | null
+    _count?: NestedIntNullableFilter
+    _avg?: NestedFloatNullableFilter
+    _sum?: NestedIntNullableFilter
+    _min?: NestedIntNullableFilter
+    _max?: NestedIntNullableFilter
+  }
+
+  export type NestedFloatNullableFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedFloatNullableFilter | number | null
+  }
+
   export type NestedEnumEventFilter = {
     equals?: Event
     in?: Enumerable<Event>
     notIn?: Enumerable<Event>
     not?: NestedEnumEventFilter | Event
+  }
+
+  export type NestedBigIntNullableFilter = {
+    equals?: bigint | number | null
+    in?: Enumerable<bigint> | Enumerable<number> | null
+    notIn?: Enumerable<bigint> | Enumerable<number> | null
+    lt?: bigint | number
+    lte?: bigint | number
+    gt?: bigint | number
+    gte?: bigint | number
+    not?: NestedBigIntNullableFilter | bigint | number | null
   }
 
   export type NestedEnumEventWithAggregatesFilter = {
@@ -5096,6 +6713,22 @@ export namespace Prisma {
     _count?: NestedIntFilter
     _min?: NestedEnumEventFilter
     _max?: NestedEnumEventFilter
+  }
+
+  export type NestedBigIntNullableWithAggregatesFilter = {
+    equals?: bigint | number | null
+    in?: Enumerable<bigint> | Enumerable<number> | null
+    notIn?: Enumerable<bigint> | Enumerable<number> | null
+    lt?: bigint | number
+    lte?: bigint | number
+    gt?: bigint | number
+    gte?: bigint | number
+    not?: NestedBigIntNullableWithAggregatesFilter | bigint | number | null
+    _count?: NestedIntNullableFilter
+    _avg?: NestedFloatNullableFilter
+    _sum?: NestedBigIntNullableFilter
+    _min?: NestedBigIntNullableFilter
+    _max?: NestedBigIntNullableFilter
   }
 
   export type SmsCreateWithoutProviderInput = {
@@ -5140,6 +6773,48 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type FCMCreateWithoutProviderInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    id?: bigint | number
+    deviceId: string
+    user: string
+    org: string
+    text: string
+    type: TextType
+    status?: Status
+    retries?: number
+    providerMessageId?: string | null
+    meta?: NullableJsonNullValueInput | InputJsonValue
+    Audit?: AuditCreateNestedManyWithoutFCMInput
+  }
+
+  export type FCMUncheckedCreateWithoutProviderInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    id?: bigint | number
+    deviceId: string
+    user: string
+    org: string
+    text: string
+    type: TextType
+    status?: Status
+    retries?: number
+    providerMessageId?: string | null
+    meta?: NullableJsonNullValueInput | InputJsonValue
+    Audit?: AuditUncheckedCreateNestedManyWithoutFCMInput
+  }
+
+  export type FCMCreateOrConnectWithoutProviderInput = {
+    where: FCMWhereUniqueInput
+    create: XOR<FCMCreateWithoutProviderInput, FCMUncheckedCreateWithoutProviderInput>
+  }
+
+  export type FCMCreateManyProviderInputEnvelope = {
+    data: Enumerable<FCMCreateManyProviderInput>
+    skipDuplicates?: boolean
+  }
+
   export type SmsUpsertWithWhereUniqueWithoutProviderInput = {
     where: SmsWhereUniqueInput
     update: XOR<SmsUpdateWithoutProviderInput, SmsUncheckedUpdateWithoutProviderInput>
@@ -5175,6 +6850,41 @@ export namespace Prisma {
     meta?: JsonNullableFilter
   }
 
+  export type FCMUpsertWithWhereUniqueWithoutProviderInput = {
+    where: FCMWhereUniqueInput
+    update: XOR<FCMUpdateWithoutProviderInput, FCMUncheckedUpdateWithoutProviderInput>
+    create: XOR<FCMCreateWithoutProviderInput, FCMUncheckedCreateWithoutProviderInput>
+  }
+
+  export type FCMUpdateWithWhereUniqueWithoutProviderInput = {
+    where: FCMWhereUniqueInput
+    data: XOR<FCMUpdateWithoutProviderInput, FCMUncheckedUpdateWithoutProviderInput>
+  }
+
+  export type FCMUpdateManyWithWhereWithoutProviderInput = {
+    where: FCMScalarWhereInput
+    data: XOR<FCMUpdateManyMutationInput, FCMUncheckedUpdateManyWithoutFCMInput>
+  }
+
+  export type FCMScalarWhereInput = {
+    AND?: Enumerable<FCMScalarWhereInput>
+    OR?: Enumerable<FCMScalarWhereInput>
+    NOT?: Enumerable<FCMScalarWhereInput>
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    id?: BigIntFilter | bigint | number
+    deviceId?: StringFilter | string
+    user?: StringFilter | string
+    org?: StringFilter | string
+    text?: StringFilter | string
+    type?: EnumTextTypeFilter | TextType
+    status?: EnumStatusFilter | Status
+    retries?: IntFilter | number
+    providerMessageId?: StringNullableFilter | string | null
+    meta?: JsonNullableFilter
+    providerId?: IntNullableFilter | number | null
+  }
+
   export type ProviderCreateWithoutSmsInput = {
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -5182,6 +6892,7 @@ export namespace Prisma {
     providerName: ProviderName
     config: JsonNullValueInput | InputJsonValue
     unitCost: number
+    FCM?: FCMCreateNestedManyWithoutProviderInput
   }
 
   export type ProviderUncheckedCreateWithoutSmsInput = {
@@ -5192,6 +6903,7 @@ export namespace Prisma {
     providerName: ProviderName
     config: JsonNullValueInput | InputJsonValue
     unitCost: number
+    FCM?: FCMUncheckedCreateNestedManyWithoutProviderInput
   }
 
   export type ProviderCreateOrConnectWithoutSmsInput = {
@@ -5204,6 +6916,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     id?: bigint | number
     event: Event
+    FCM?: FCMCreateNestedOneWithoutAuditInput
   }
 
   export type AuditUncheckedCreateWithoutSmsInput = {
@@ -5211,6 +6924,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     id?: bigint | number
     event: Event
+    fCMId?: bigint | number | null
   }
 
   export type AuditCreateOrConnectWithoutSmsInput = {
@@ -5235,6 +6949,7 @@ export namespace Prisma {
     providerName?: EnumProviderNameFieldUpdateOperationsInput | ProviderName
     config?: JsonNullValueInput | InputJsonValue
     unitCost?: FloatFieldUpdateOperationsInput | number
+    FCM?: FCMUpdateManyWithoutProviderInput
   }
 
   export type ProviderUncheckedUpdateWithoutSmsInput = {
@@ -5245,6 +6960,7 @@ export namespace Prisma {
     providerName?: EnumProviderNameFieldUpdateOperationsInput | ProviderName
     config?: JsonNullValueInput | InputJsonValue
     unitCost?: FloatFieldUpdateOperationsInput | number
+    FCM?: FCMUncheckedUpdateManyWithoutProviderInput
   }
 
   export type AuditUpsertWithWhereUniqueWithoutSmsInput = {
@@ -5272,6 +6988,101 @@ export namespace Prisma {
     id?: BigIntFilter | bigint | number
     smsId?: BigIntFilter | bigint | number
     event?: EnumEventFilter | Event
+    fCMId?: BigIntNullableFilter | bigint | number | null
+  }
+
+  export type AuditCreateWithoutFCMInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    id?: bigint | number
+    event: Event
+    sms: SmsCreateNestedOneWithoutAuditInput
+  }
+
+  export type AuditUncheckedCreateWithoutFCMInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    id?: bigint | number
+    smsId: bigint | number
+    event: Event
+  }
+
+  export type AuditCreateOrConnectWithoutFCMInput = {
+    where: AuditWhereUniqueInput
+    create: XOR<AuditCreateWithoutFCMInput, AuditUncheckedCreateWithoutFCMInput>
+  }
+
+  export type AuditCreateManyFCMInputEnvelope = {
+    data: Enumerable<AuditCreateManyFCMInput>
+    skipDuplicates?: boolean
+  }
+
+  export type ProviderCreateWithoutFCMInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    channel: string
+    providerName: ProviderName
+    config: JsonNullValueInput | InputJsonValue
+    unitCost: number
+    Sms?: SmsCreateNestedManyWithoutProviderInput
+  }
+
+  export type ProviderUncheckedCreateWithoutFCMInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    id?: number
+    channel: string
+    providerName: ProviderName
+    config: JsonNullValueInput | InputJsonValue
+    unitCost: number
+    Sms?: SmsUncheckedCreateNestedManyWithoutProviderInput
+  }
+
+  export type ProviderCreateOrConnectWithoutFCMInput = {
+    where: ProviderWhereUniqueInput
+    create: XOR<ProviderCreateWithoutFCMInput, ProviderUncheckedCreateWithoutFCMInput>
+  }
+
+  export type AuditUpsertWithWhereUniqueWithoutFCMInput = {
+    where: AuditWhereUniqueInput
+    update: XOR<AuditUpdateWithoutFCMInput, AuditUncheckedUpdateWithoutFCMInput>
+    create: XOR<AuditCreateWithoutFCMInput, AuditUncheckedCreateWithoutFCMInput>
+  }
+
+  export type AuditUpdateWithWhereUniqueWithoutFCMInput = {
+    where: AuditWhereUniqueInput
+    data: XOR<AuditUpdateWithoutFCMInput, AuditUncheckedUpdateWithoutFCMInput>
+  }
+
+  export type AuditUpdateManyWithWhereWithoutFCMInput = {
+    where: AuditScalarWhereInput
+    data: XOR<AuditUpdateManyMutationInput, AuditUncheckedUpdateManyWithoutAuditInput>
+  }
+
+  export type ProviderUpsertWithoutFCMInput = {
+    update: XOR<ProviderUpdateWithoutFCMInput, ProviderUncheckedUpdateWithoutFCMInput>
+    create: XOR<ProviderCreateWithoutFCMInput, ProviderUncheckedCreateWithoutFCMInput>
+  }
+
+  export type ProviderUpdateWithoutFCMInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    channel?: StringFieldUpdateOperationsInput | string
+    providerName?: EnumProviderNameFieldUpdateOperationsInput | ProviderName
+    config?: JsonNullValueInput | InputJsonValue
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    Sms?: SmsUpdateManyWithoutProviderInput
+  }
+
+  export type ProviderUncheckedUpdateWithoutFCMInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    id?: IntFieldUpdateOperationsInput | number
+    channel?: StringFieldUpdateOperationsInput | string
+    providerName?: EnumProviderNameFieldUpdateOperationsInput | ProviderName
+    config?: JsonNullValueInput | InputJsonValue
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    Sms?: SmsUncheckedUpdateManyWithoutProviderInput
   }
 
   export type SmsCreateWithoutAuditInput = {
@@ -5311,6 +7122,43 @@ export namespace Prisma {
     create: XOR<SmsCreateWithoutAuditInput, SmsUncheckedCreateWithoutAuditInput>
   }
 
+  export type FCMCreateWithoutAuditInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    id?: bigint | number
+    deviceId: string
+    user: string
+    org: string
+    text: string
+    type: TextType
+    status?: Status
+    retries?: number
+    providerMessageId?: string | null
+    meta?: NullableJsonNullValueInput | InputJsonValue
+    Provider?: ProviderCreateNestedOneWithoutFCMInput
+  }
+
+  export type FCMUncheckedCreateWithoutAuditInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    id?: bigint | number
+    deviceId: string
+    user: string
+    org: string
+    text: string
+    type: TextType
+    status?: Status
+    retries?: number
+    providerMessageId?: string | null
+    meta?: NullableJsonNullValueInput | InputJsonValue
+    providerId?: number | null
+  }
+
+  export type FCMCreateOrConnectWithoutAuditInput = {
+    where: FCMWhereUniqueInput
+    create: XOR<FCMCreateWithoutAuditInput, FCMUncheckedCreateWithoutAuditInput>
+  }
+
   export type SmsUpsertWithoutAuditInput = {
     update: XOR<SmsUpdateWithoutAuditInput, SmsUncheckedUpdateWithoutAuditInput>
     create: XOR<SmsCreateWithoutAuditInput, SmsUncheckedCreateWithoutAuditInput>
@@ -5348,11 +7196,63 @@ export namespace Prisma {
     meta?: NullableJsonNullValueInput | InputJsonValue
   }
 
+  export type FCMUpsertWithoutAuditInput = {
+    update: XOR<FCMUpdateWithoutAuditInput, FCMUncheckedUpdateWithoutAuditInput>
+    create: XOR<FCMCreateWithoutAuditInput, FCMUncheckedCreateWithoutAuditInput>
+  }
+
+  export type FCMUpdateWithoutAuditInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    deviceId?: StringFieldUpdateOperationsInput | string
+    user?: StringFieldUpdateOperationsInput | string
+    org?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    type?: EnumTextTypeFieldUpdateOperationsInput | TextType
+    status?: EnumStatusFieldUpdateOperationsInput | Status
+    retries?: IntFieldUpdateOperationsInput | number
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    meta?: NullableJsonNullValueInput | InputJsonValue
+    Provider?: ProviderUpdateOneWithoutFCMInput
+  }
+
+  export type FCMUncheckedUpdateWithoutAuditInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    deviceId?: StringFieldUpdateOperationsInput | string
+    user?: StringFieldUpdateOperationsInput | string
+    org?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    type?: EnumTextTypeFieldUpdateOperationsInput | TextType
+    status?: EnumStatusFieldUpdateOperationsInput | Status
+    retries?: IntFieldUpdateOperationsInput | number
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    meta?: NullableJsonNullValueInput | InputJsonValue
+    providerId?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
   export type SmsCreateManyProviderInput = {
     createdAt?: Date | string
     updatedAt?: Date | string
     id?: bigint | number
     phone: string
+    user: string
+    org: string
+    text: string
+    type: TextType
+    status?: Status
+    retries?: number
+    providerMessageId?: string | null
+    meta?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type FCMCreateManyProviderInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    id?: bigint | number
+    deviceId: string
     user: string
     org: string
     text: string
@@ -5410,11 +7310,59 @@ export namespace Prisma {
     meta?: NullableJsonNullValueInput | InputJsonValue
   }
 
+  export type FCMUpdateWithoutProviderInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    deviceId?: StringFieldUpdateOperationsInput | string
+    user?: StringFieldUpdateOperationsInput | string
+    org?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    type?: EnumTextTypeFieldUpdateOperationsInput | TextType
+    status?: EnumStatusFieldUpdateOperationsInput | Status
+    retries?: IntFieldUpdateOperationsInput | number
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    meta?: NullableJsonNullValueInput | InputJsonValue
+    Audit?: AuditUpdateManyWithoutFCMInput
+  }
+
+  export type FCMUncheckedUpdateWithoutProviderInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    deviceId?: StringFieldUpdateOperationsInput | string
+    user?: StringFieldUpdateOperationsInput | string
+    org?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    type?: EnumTextTypeFieldUpdateOperationsInput | TextType
+    status?: EnumStatusFieldUpdateOperationsInput | Status
+    retries?: IntFieldUpdateOperationsInput | number
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    meta?: NullableJsonNullValueInput | InputJsonValue
+    Audit?: AuditUncheckedUpdateManyWithoutFCMInput
+  }
+
+  export type FCMUncheckedUpdateManyWithoutFCMInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    deviceId?: StringFieldUpdateOperationsInput | string
+    user?: StringFieldUpdateOperationsInput | string
+    org?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    type?: EnumTextTypeFieldUpdateOperationsInput | TextType
+    status?: EnumStatusFieldUpdateOperationsInput | Status
+    retries?: IntFieldUpdateOperationsInput | number
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    meta?: NullableJsonNullValueInput | InputJsonValue
+  }
+
   export type AuditCreateManySmsInput = {
     createdAt?: Date | string
     updatedAt?: Date | string
     id?: bigint | number
     event: Event
+    fCMId?: bigint | number | null
   }
 
   export type AuditUpdateWithoutSmsInput = {
@@ -5422,6 +7370,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     event?: EnumEventFieldUpdateOperationsInput | Event
+    FCM?: FCMUpdateOneWithoutAuditInput
   }
 
   export type AuditUncheckedUpdateWithoutSmsInput = {
@@ -5429,12 +7378,38 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     event?: EnumEventFieldUpdateOperationsInput | Event
+    fCMId?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   }
 
   export type AuditUncheckedUpdateManyWithoutAuditInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     id?: BigIntFieldUpdateOperationsInput | bigint | number
+    event?: EnumEventFieldUpdateOperationsInput | Event
+    fCMId?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  }
+
+  export type AuditCreateManyFCMInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    id?: bigint | number
+    smsId: bigint | number
+    event: Event
+  }
+
+  export type AuditUpdateWithoutFCMInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    event?: EnumEventFieldUpdateOperationsInput | Event
+    sms?: SmsUpdateOneRequiredWithoutAuditInput
+  }
+
+  export type AuditUncheckedUpdateWithoutFCMInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    smsId?: BigIntFieldUpdateOperationsInput | bigint | number
     event?: EnumEventFieldUpdateOperationsInput | Event
   }
 

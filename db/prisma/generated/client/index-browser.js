@@ -12,11 +12,11 @@ exports.Prisma = Prisma
 
 /**
  * Prisma Client JS version: 3.5.0
- * Query Engine version: 78a5df6def6943431f4c022e1428dbc3e833cf8e
+ * Query Engine version: 34df67547cf5598f5a6cd3eb45f14ee70c3fb86f
  */
 Prisma.prismaVersion = {
   client: "3.5.0",
-  engine: "78a5df6def6943431f4c022e1428dbc3e833cf8e"
+  engine: "34df67547cf5598f5a6cd3eb45f14ee70c3fb86f"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -102,12 +102,29 @@ exports.Prisma.SmsScalarFieldEnum = makeEnum({
   meta: 'meta'
 });
 
+exports.Prisma.FCMScalarFieldEnum = makeEnum({
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  id: 'id',
+  deviceId: 'deviceId',
+  user: 'user',
+  org: 'org',
+  text: 'text',
+  type: 'type',
+  status: 'status',
+  retries: 'retries',
+  providerMessageId: 'providerMessageId',
+  meta: 'meta',
+  providerId: 'providerId'
+});
+
 exports.Prisma.AuditScalarFieldEnum = makeEnum({
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   id: 'id',
   smsId: 'smsId',
-  event: 'event'
+  event: 'event',
+  fCMId: 'fCMId'
 });
 
 exports.Prisma.SortOrder = makeEnum({
@@ -163,6 +180,7 @@ exports.Event = makeEnum({
 exports.Prisma.ModelName = makeEnum({
   Provider: 'Provider',
   Sms: 'Sms',
+  FCM: 'FCM',
   Audit: 'Audit'
 });
 

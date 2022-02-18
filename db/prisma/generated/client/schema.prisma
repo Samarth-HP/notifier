@@ -47,6 +47,7 @@ model Provider {
   config       Json
   unitCost     Float
   Sms          Sms[]
+  FCM          FCM[]
 }
 
 model Sms {
@@ -67,6 +68,24 @@ model Sms {
   Audit             Audit[]
 }
 
+model FCM {
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  id                BigInt    @id @default(autoincrement())
+  deviceId          String
+  user              String    @db.Uuid
+  org               String    @db.Uuid
+  text              String
+  type              TextType
+  status            Status    @default(QUEUED)
+  retries           Int       @default(0)
+  providerMessageId String?
+  meta              Json?
+  Audit             Audit[]
+  Provider          Provider? @relation(fields: [providerId], references: [id])
+  providerId        Int?
+}
+
 model Audit {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -74,4 +93,6 @@ model Audit {
   smsId     BigInt
   sms       Sms      @relation(fields: [smsId], references: [id])
   event     Event
+  FCM       FCM?     @relation(fields: [fCMId], references: [id])
+  fCMId     BigInt?
 }
